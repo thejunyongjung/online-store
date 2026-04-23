@@ -3,15 +3,56 @@ import java.util.ArrayList;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.BufferedReader;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
 
+        // Calling loadProducts
+        ArrayList<Product> items = loadProducts("src/main/resources/Products.csv");
+
+        // Home Screen
+        boolean running = true;
+        while (running) {
+            System.out.println("==============================");
+            System.out.println("     Welcome to the Store!     ");
+            System.out.println("==============================");
+            System.out.println("1. Display Products");
+            System.out.println("2. Display Cart");
+            System.out.println("3. Exit");
+            System.out.println("==============================");
+            System.out.print("Enter your choice: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    System.out.println();
+                    System.out.println("Exiting...");
+                    running = false;
+                    break;
+                default:
+                    System.out.println();
+                    System.out.println("Invalid choice. Going back to the Home Screen.");
+                    break;
+            }
+        }
+        System.out.println();
+        System.out.println("Goodbye!");
+        scanner.close();
+    }
+    public static ArrayList<Product> loadProducts(String filePath) {
         // Create an empty ArrayList
         ArrayList<Product> items = new ArrayList<>();
 
         // Open and read CSV file
-        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/Products.csv")))
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath)))
         {
             // Skip the header line
             br.readLine();
@@ -34,11 +75,6 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Error reading file");
         }
-
-        // Display all products
-        for (Product item : items) {
-            System.out.println(item);
-        }
-
+        return items;
     }
 }
