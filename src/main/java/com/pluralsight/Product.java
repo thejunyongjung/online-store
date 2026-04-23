@@ -29,6 +29,6 @@ public class Product {
     // toString Method
     @Override
     public String toString() {
-        return String.format("%-10s %-30s $%8.2f %s", sku, name, price, department);
+        return String.format("%-10s %-35s $%8.2f %s", sku, name, price, department);
     }
 }
