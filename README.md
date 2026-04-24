@@ -234,8 +234,8 @@ Enter your choice: 2  (from Home Screen)
 ### Step 5 — Checkout
 ```
 Enter your choice: 1  (Check Out)
-Enter payment amount: $300
-→ Change: $185.60
+Enter payment amount: $500
+→ Change: $259.89
 → Receipt printed to screen
 → Receipt saved to Receipts/202604241148.txt
 ```
@@ -246,14 +246,17 @@ Enter payment amount: $300
 
 ```
 ===================================================
-                     Receipt
+                     Receipt                       
 ---------------------------------------------------
-Date: 2026-04-24
-AV1051   JBL Bluetooth Speaker         $    89.95
-GM1148   Retro Handheld Arcade         $    24.45
-                              Total: $    114.40
-                        Amount Paid: $    300.00
-                             Change: $    185.60
+                                  Date:  2026-04-24
+---------------------------------------------------
+PW1001   Solar Powered Battery Charger    $   19.99
+AV1312   Mini 1000 Lumens Projector       $  149.95
+AV1051   JBL Bluetooth Speaker            $   89.95
+---------------------------------------------------
+                                  Total:  $  259.89
+                            Amount Paid:  $  500.00
+                                 Change:  $  240.11
 ===================================================
 ```
 
