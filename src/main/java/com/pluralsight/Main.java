@@ -1,4 +1,5 @@
 package com.pluralsight;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,6 +12,7 @@ public class Main {
 
         // Calling loadProducts
         ArrayList<Product> items = loadProducts("src/main/resources/Products.csv");
+        ShoppingCart cart = new ShoppingCart();
 
         // Home Screen
         boolean running = true;
@@ -30,9 +32,10 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    displayProducts(items, scanner);
+                    displayProducts(items, cart, scanner);
                     break;
                 case 2:
+                    displayCart(cart, scanner);
                     break;
                 case 3:
                     System.out.println();
@@ -50,7 +53,7 @@ public class Main {
         scanner.close();
     }
 
-    private static void displayProducts(ArrayList<Product> items, Scanner scanner) {
+    public static void displayProducts(ArrayList<Product> items, ShoppingCart cart, Scanner scanner) {
         System.out.println();
         System.out.println("==============================");
         System.out.println("       Products Screen        ");
@@ -58,7 +61,6 @@ public class Main {
         for (Product product : items) {
             System.out.println(product);
         }
-
         while (true) {
             System.out.println("==============================");
             System.out.println("1. Search by Name");
@@ -83,6 +85,20 @@ public class Main {
                     searchByDepartment(items, scanner);
                     break;
                 case 4: // Add to Cart
+                    System.out.println();
+                    System.out.print("Enter the SKU of the product to add: ");
+                    String answer =  scanner.nextLine();
+                    boolean found = false;
+                    for (Product product : items) {
+                        if (product.getSku().equals(answer)) {
+                            cart.addProduct(product);
+                            System.out.println("\"" + answer + "\"" + " has been added to the cart!");
+                            found = true;
+                        }
+                    }
+                    if (!found) {
+                        System.out.println("\"" + answer + "\"" + " doesn't exist! Please try again.");
+                    }
                     break;
                 case 0: // Back to Home Screen
                     System.out.println();
@@ -94,6 +110,62 @@ public class Main {
             }
         }
 
+    }
+
+    public static void displayCart(ShoppingCart cart, Scanner scanner) {
+        while (true) {
+            System.out.println();
+            System.out.println("==============================");
+            System.out.println("         Cart Screen          ");
+            System.out.println("==============================");
+            for (Product product : cart.getCart()) {
+                System.out.println(product);
+            }
+            System.out.println("------------------------------");
+            System.out.println("Total: " + cart.getTotal());
+
+            System.out.println("==============================");
+            System.out.println("1. Check Out");
+            System.out.println("2. Remove Product");
+            System.out.println("0. Back to Home Screen");
+            System.out.println("==============================");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+            switch (choice) {
+                case 1:
+                    checkOut(cart, scanner);
+                    break;
+                case 2:
+                    System.out.println();
+                    System.out.print("Enter the SKU of the product to remove?: ");
+                    String answer =  scanner.nextLine();
+
+                    boolean found = false;
+                    Product productToRemove = null;
+                    for (Product product : cart.getCart()) {
+                        if (product.getSku().equals(answer)) {
+                            productToRemove = product;
+                            found = true;
+                        }
+                    }
+                    if (productToRemove != null) {
+                        cart.removeProduct(productToRemove);
+                        System.out.println("\"" + answer + "\"" + " has been removed from the cart!");
+                    }
+                    if (!found) {
+                        System.out.println("\"" + answer + "\"" + " doesn't exist! Please try again.");
+                    }
+                    break;
+                case 0:
+                    System.out.println();
+                    System.out.println("Going back to Home Screen!");
+                    return;
+                default:
+                    System.out.println();
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
     }
 
     public static void searchByName(ArrayList<Product> items, Scanner scanner) {
@@ -232,5 +304,42 @@ public class Main {
                 System.out.println("Invalid choice. Please try again.");
                 return continueSearch(scanner);
         }
+    }
+
+    public static void checkOut(ShoppingCart cart, Scanner scanner) {
+        System.out.println("==============================");
+        System.out.println("           Checkout           ");
+        System.out.println("==============================");
+        for (Product product : cart.getCart()) {
+            System.out.println(product);
+        }
+        System.out.println("------------------------------");
+        System.out.printf("Total: %.2f%n", cart.getTotal());
+        System.out.println("==============================");
+        double userPayment = 0;
+        double change = 0;
+        while (true) {
+            System.out.println("Enter payment amount: $");
+            userPayment = scanner.nextDouble();
+            scanner.nextLine();
+            change = userPayment - cart.getTotal();
+            if (change < 0) {
+                System.out.println("Insufficient funds. Please try again.");
+            } else {
+                System.out.printf("Change: $%.2f%n", change);
+                break;
+            }
+        }
+        System.out.println("==============================");
+        System.out.println("           Receipt            ");
+        System.out.println("------------------------------");
+        System.out.println("Date: " + LocalDate.now());
+        for (Product product : cart.getCart()) {
+            System.out.println(product);
+        }
+        System.out.printf("Total: $%.2f%n%n", cart.getTotal());
+        System.out.printf("Amount Paid: $%.2f%n", userPayment);
+        System.out.printf("Change: $%.2f%n", change);
+        cart.clearCart();
     }
 }
