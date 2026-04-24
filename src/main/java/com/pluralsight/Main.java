@@ -92,11 +92,14 @@ public class Main {
                     for (Product product : items) {
                         if (product.getSku().equals(answer)) {
                             cart.addProduct(product);
+                            System.out.println();
                             System.out.println("\"" + answer + "\"" + " has been added to the cart!");
+                            System.out.println();
                             found = true;
                         }
                     }
                     if (!found) {
+                        System.out.println();
                         System.out.println("\"" + answer + "\"" + " doesn't exist! Please try again.");
                     }
                     break;
@@ -122,7 +125,7 @@ public class Main {
                 System.out.println(product);
             }
             System.out.println("------------------------------");
-            System.out.println("Total: " + cart.getTotal());
+            System.out.printf("Total: $%.2f%n", cart.getTotal());
 
             System.out.println("==============================");
             System.out.println("1. Check Out");
@@ -135,7 +138,7 @@ public class Main {
             switch (choice) {
                 case 1:
                     checkOut(cart, scanner);
-                    break;
+                    return;
                 case 2:
                     System.out.println();
                     System.out.print("Enter the SKU of the product to remove?: ");
@@ -151,9 +154,11 @@ public class Main {
                     }
                     if (productToRemove != null) {
                         cart.removeProduct(productToRemove);
+                        System.out.println();
                         System.out.println("\"" + answer + "\"" + " has been removed from the cart!");
                     }
                     if (!found) {
+                        System.out.println();
                         System.out.println("\"" + answer + "\"" + " doesn't exist! Please try again.");
                     }
                     break;
@@ -201,7 +206,7 @@ public class Main {
 
         while (true) {
             System.out.println();
-            System.out.println("Enter the product price to search: ");
+            System.out.print("Enter the product price to search: ");
             double price = scanner.nextDouble();
             scanner.nextLine();
 
@@ -230,7 +235,7 @@ public class Main {
     public static void searchByDepartment(ArrayList<Product> items, Scanner scanner) {
         while (true) {
             System.out.println();
-            System.out.println("Enter the product department to search: ");
+            System.out.print("Enter the product department to search: ");
             String department = scanner.nextLine().trim();
 
             if (department.isEmpty()) {
@@ -307,25 +312,27 @@ public class Main {
     }
 
     public static void checkOut(ShoppingCart cart, Scanner scanner) {
+        System.out.println();
         System.out.println("==============================");
         System.out.println("           Checkout           ");
         System.out.println("==============================");
         for (Product product : cart.getCart()) {
-            System.out.println(product);
+            System.out.println(product.toReceiptString());
         }
         System.out.println("------------------------------");
-        System.out.printf("Total: %.2f%n", cart.getTotal());
+        System.out.printf("Total: $%.2f%n", cart.getTotal());
         System.out.println("==============================");
         double userPayment = 0;
         double change = 0;
         while (true) {
-            System.out.println("Enter payment amount: $");
+            System.out.print("Enter payment amount: $");
             userPayment = scanner.nextDouble();
             scanner.nextLine();
             change = userPayment - cart.getTotal();
             if (change < 0) {
                 System.out.println("Insufficient funds. Please try again.");
             } else {
+                System.out.println("------------------------------");
                 System.out.printf("Change: $%.2f%n", change);
                 break;
             }
@@ -335,11 +342,11 @@ public class Main {
         System.out.println("------------------------------");
         System.out.println("Date: " + LocalDate.now());
         for (Product product : cart.getCart()) {
-            System.out.println(product);
+            System.out.println(product.toReceiptString());
         }
-        System.out.printf("Total:       $%.2f%n%n", cart.getTotal());
-        System.out.printf("Amount Paid: $%.2f%n", userPayment);
-        System.out.printf("Change:      $%.2f%n", change);
+        System.out.printf("Total:                 $%.2f%n", cart.getTotal());
+        System.out.printf("Amount Paid:           $%.2f%n", userPayment);
+        System.out.printf("Change:                $%.2f%n", change);
         System.out.println("==============================");
         saveReceipt(cart, userPayment, change);
         cart.clearCart();
@@ -349,27 +356,36 @@ public class Main {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
         String fileName = "Receipts/" + now.format(formatter) + ".txt";
+
+        File directory = new File("Receipts");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
-            bw.write("==============================");
+            bw.write("===================================================");
             bw.newLine();
-            bw.write("           Receipt            ");
+            bw.write("                     Receipt                       ");
             bw.newLine();
-            bw.write("------------------------------");
+            bw.write("---------------------------------------------------");
             bw.newLine();
-            bw.write("Date: " + LocalDate.now());
+            bw.write("                                  Date:  " + LocalDate.now());
+            bw.newLine();
+            bw.write("---------------------------------------------------");
             bw.newLine();
 
             for (Product product : cart.getCart()) {
-                bw.write(product.toString());
+                bw.write(product.toReceiptString());
                 bw.newLine();
             }
-            bw.write(String.format("Total:       $%.2f", cart.getTotal()));
+            bw.write("---------------------------------------------------");
             bw.newLine();
-            bw.write(String.format("Amount Paid: $%.2f", userPayment));
+            bw.write(String.format("%41s $%8.2f", "Total: ", cart.getTotal()));
             bw.newLine();
-            bw.write(String.format("Change:      $%.2f", change));
+            bw.write(String.format("%41s $%8.2f", "Amount Paid: ", userPayment));
             bw.newLine();
-            bw.write("==============================");
+            bw.write(String.format("%41s $%8.2f", "Change: ", change));
+            bw.newLine();
+            bw.write("===================================================");
 
         } catch (IOException e) {
             System.out.println("Error writing to file");
