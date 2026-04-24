@@ -15,6 +15,7 @@ public class Main {
         // Home Screen
         boolean running = true;
         while (running) {
+            System.out.println();
             System.out.println("==============================");
             System.out.println("     Welcome to the Store!     ");
             System.out.println("==============================");
@@ -29,6 +30,7 @@ public class Main {
 
             switch (choice) {
                 case 1:
+                    displayProducts(items, scanner);
                     break;
                 case 2:
                     break;
@@ -47,6 +49,140 @@ public class Main {
         System.out.println("Goodbye!");
         scanner.close();
     }
+
+    private static void displayProducts(ArrayList<Product> items, Scanner scanner) {
+        System.out.println();
+        System.out.println("==============================");
+        System.out.println("       Products Screen        ");
+        System.out.println("==============================");
+        for (Product product : items) {
+            System.out.println(product);
+        }
+
+        while (true) {
+            System.out.println("==============================");
+            System.out.println("1. Search by Name");
+            System.out.println("2. Search by Price");
+            System.out.println("3. Search by Department");
+            System.out.println("4. Add to Cart");
+            System.out.println("0. Back to Home Screen");
+            System.out.println("==============================");
+            System.out.print("Enter your choice: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1: // Search by Name
+                    searchByName(items, scanner);
+                    break;
+                case 2: // Search by Price
+                    searchByPrice(items, scanner);
+                    break;
+                case 3: // Search by Department
+                    searchByDepartment(items, scanner);
+                    break;
+                case 4: // Add to Cart
+                    break;
+                case 0: // Back to Home Screen
+                    System.out.println();
+                    System.out.println("Going back to Home Screen!");
+                    return;
+                default:
+                    System.out.println();
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+
+    }
+
+    public static void searchByName(ArrayList<Product> items, Scanner scanner) {
+
+        while (true) {
+            System.out.println();
+            System.out.print("Enter the product name to search: ");
+            String name = scanner.nextLine().trim();
+
+            if (name.isEmpty()) {
+                System.out.println();
+                System.out.println("Invalid product name!");
+                continue;
+            } else {
+                boolean found = false;
+                for (Product item : items) {
+                    if (item.getName().toLowerCase().contains(name.toLowerCase())) {
+                        System.out.println();
+                        System.out.println("Item Found - " + item);
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    System.out.println();
+                    System.out.println("Invalid product name!");
+                }
+            }
+            if (!continueSearch(scanner)) { return; }
+        }
+    }
+
+    public static void searchByPrice(ArrayList<Product> items, Scanner scanner) {
+
+        while (true) {
+            System.out.println();
+            System.out.println("Enter the product price to search: ");
+            double price = scanner.nextDouble();
+            scanner.nextLine();
+
+            if (price <= 0) {
+                System.out.println();
+                System.out.println("Invalid product price. Please try again.");
+                continue;
+            } else {
+                boolean found = false;
+                for (Product item : items) {
+                    if (price >= item.getPrice()) {
+                        System.out.println();
+                        System.out.println("Item Found - " + item);
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    System.out.println();
+                    System.out.println("Invalid product price. Please try again.");
+                }
+            }
+            if (!continueSearch(scanner)) { return; }
+        }
+    }
+
+    public static void searchByDepartment(ArrayList<Product> items, Scanner scanner) {
+        while (true) {
+            System.out.println();
+            System.out.println("Enter the product department to search: ");
+            String department = scanner.nextLine().trim();
+
+            if (department.isEmpty()) {
+                System.out.println();
+                System.out.println("Invalid product department. Please try again.");
+                continue;
+            } else {
+                boolean found = false;
+                for (Product item : items) {
+                    if (item.getDepartment().toLowerCase().contains(department.toLowerCase())) {
+                        System.out.println();
+                        System.out.println("Item Found - " + item);
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    System.out.println();
+                    System.out.println("Invalid product department. Please try again.");
+                }
+            }
+            if (!continueSearch(scanner)) { return; }
+        }
+    }
+
     public static ArrayList<Product> loadProducts(String filePath) {
         // Create an empty ArrayList
         ArrayList<Product> items = new ArrayList<>();
@@ -76,5 +212,25 @@ public class Main {
             System.out.println("Error reading file");
         }
         return items;
+    }
+
+    public static boolean continueSearch(Scanner scanner) {
+        System.out.println();
+        System.out.print("Do you want to continue to search? (y/n): ");
+        String answer = scanner.nextLine().trim();
+
+        switch (answer) {
+            case "y":
+            case "Y":
+                return true;
+            case "n":
+            case "N":
+                System.out.println();
+                System.out.println("Going back to Product Screen!");
+                return false;
+            default:
+                System.out.println("Invalid choice. Please try again.");
+                return continueSearch(scanner);
+        }
     }
 }
