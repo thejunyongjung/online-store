@@ -1,9 +1,9 @@
 package com.pluralsight;
+import java.io.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.BufferedReader;
 import java.util.Scanner;
 
 public class Main {
@@ -337,9 +337,42 @@ public class Main {
         for (Product product : cart.getCart()) {
             System.out.println(product);
         }
-        System.out.printf("Total: $%.2f%n%n", cart.getTotal());
+        System.out.printf("Total:       $%.2f%n%n", cart.getTotal());
         System.out.printf("Amount Paid: $%.2f%n", userPayment);
-        System.out.printf("Change: $%.2f%n", change);
+        System.out.printf("Change:      $%.2f%n", change);
+        System.out.println("==============================");
+        saveReceipt(cart, userPayment, change);
         cart.clearCart();
+    }
+
+    private static void saveReceipt(ShoppingCart cart, double userPayment, double change) {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+        String fileName = "Receipts/" + now.format(formatter) + ".txt";
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
+            bw.write("==============================");
+            bw.newLine();
+            bw.write("           Receipt            ");
+            bw.newLine();
+            bw.write("------------------------------");
+            bw.newLine();
+            bw.write("Date: " + LocalDate.now());
+            bw.newLine();
+
+            for (Product product : cart.getCart()) {
+                bw.write(product.toString());
+                bw.newLine();
+            }
+            bw.write(String.format("Total:       $%.2f", cart.getTotal()));
+            bw.newLine();
+            bw.write(String.format("Amount Paid: $%.2f", userPayment));
+            bw.newLine();
+            bw.write(String.format("Change:      $%.2f", change));
+            bw.newLine();
+            bw.write("==============================");
+
+        } catch (IOException e) {
+            System.out.println("Error writing to file");
+        }
     }
 }
